@@ -9,8 +9,8 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User
+from flask_jwt_extended import JWTManager
 from routes.users import users
-#from models import Person
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -21,6 +21,7 @@ if db_url is not None:
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////tmp/test.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+jwt = JWTManager(app)
 app.register_blueprint(users)
 
 MIGRATE = Migrate(app, db)
