@@ -1,7 +1,7 @@
 image:
   file: .gitpod.Dockerfile
 ports:
-  - port: 3001
+  - port: 3002
     onOpen: open-preview
     visibility: public
   - port: 3306

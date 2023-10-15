@@ -18,12 +18,14 @@ flask-cors = "*"
 gunicorn = "*"
 mysqlclient = "*"
 flask-admin = "*"
+flask-jwt-extended = "*"
+bcrypt = "*"
 
 [requires]
 python_version = "3.10"
 
 [scripts]
-start="flask run -p 3001 -h 0.0.0.0"
+start="flask run -p 3002 -h 0.0.0.0"
 init="flask db init"
 migrate="flask db migrate"
 upgrade="flask db upgrade"
