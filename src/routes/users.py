@@ -27,7 +27,9 @@ def get_users():
 @users.route("/user", methods=["POST"])
 def create_user():
     body = request.get_json()
-    if "email" in body.keys() and body["email"] != "" and "password" in body.keys() and body["password"] != "":
+    if "email" in body.keys() and body["email"] != "" and "password" in body.keys() and body["password"] != "" and "name" in body.keys() and body["name"] != "" and "lastname" in body.keys() and body["lastname"] != "":
+        name = body.get("name").capitalize()
+        lastname = body.get("lastname").capitalize()
         email = body.get("email").lower()
         password = body.get("password")
         possible_user = User.query.filter_by(email=email).first()
@@ -39,6 +41,8 @@ def create_user():
         salt = bcrypt.gensalt(14)
         hashed_password = bcrypt.hashpw(password=bpassword, salt=salt)
         user = User(
+            name=name,
+            lastname=lastname,
             email=email,
             password=hashed_password.decode("utf-8")
         )
@@ -49,7 +53,7 @@ def create_user():
             "email": user.email
         }), 201
     return jsonify({
-        "message": "Attributes email and password are needed"
+        "message": "Attributes name, lastname, email and password are needed"
     }), 400
 
 @users.route("/user", methods=["DELETE"])
