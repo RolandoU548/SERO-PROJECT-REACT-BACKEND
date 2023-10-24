@@ -17,12 +17,21 @@ def check_email(email):
 
 users= Blueprint("users", __name__)
 
-@users.route("/user", methods=["GET"])
+@users.route("/users", methods=["GET"])
 @jwt_required()
 def get_users():
     users = User.query.all()
     all_users = list(map(lambda x: x.serialize(), users))
     return jsonify(all_users), 200
+
+@users.route("/user", methods=["GET"])
+@jwt_required()
+def get_user():
+    email = get_jwt_identity()
+    user = User.query.filter_by(email=email).first()
+    if user:
+        return jsonify(user.serialize()), 200
+    return jsonify({"message": "User not found"}), 404
 
 @users.route("/user", methods=["POST"])
 def create_user():
