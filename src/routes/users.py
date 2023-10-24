@@ -37,6 +37,8 @@ def create_user():
             return jsonify({"message": "User " + email + " already exists"}), 422
         if check_email(email) == False:
             return jsonify({ "message" : "Email format is invalid" }), 400
+        if len(password) < 6:
+            return jsonify({ "message" : "Password must be at least 6 characters" }), 400
         bpassword = bytes(password, "utf-8")
         salt = bcrypt.gensalt(14)
         hashed_password = bcrypt.hashpw(password=bpassword, salt=salt)
@@ -73,7 +75,7 @@ def create_token():
     password = request.json.get("password", None)  
     if email is None or password is None or email == "" or password == "":
         return {"message": "Parameters missing"}, 400
-    user = User.query.filter_by(email= email).one_or_none()
+    user = User.query.filter_by(email= email.lower()).one_or_none()
     if user is None:
         return {"message": "User doesn't exist"}, 400
     password_byte =bytes(password, "utf-8")
