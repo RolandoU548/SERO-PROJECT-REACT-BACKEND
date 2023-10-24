@@ -1,21 +1,25 @@
 from flask import Blueprint
 from flask import request, jsonify
 import bcrypt
-from models import db, User
+from models import db, User, Clients
 import re
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from utils import APIException
+import os
+
 
 def check_email(email):
     regex = r'[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}'
-    if(re.fullmatch(regex, email)):
+    if (re.fullmatch(regex, email)):
         return True
     else:
         return False
 
-users= Blueprint("users", __name__)
+
+users = Blueprint("users", __name__)
+
 
 @users.route("/users", methods=["GET"])
 @jwt_required()
@@ -23,6 +27,7 @@ def get_users():
     users = User.query.all()
     all_users = list(map(lambda x: x.serialize(), users))
     return jsonify(all_users), 200
+
 
 @users.route("/user", methods=["GET"])
 @jwt_required()
@@ -32,6 +37,7 @@ def get_user():
     if user:
         return jsonify(user.serialize()), 200
     return jsonify({"message": "User not found"}), 404
+
 
 @users.route("/user", methods=["POST"])
 def create_user():
@@ -45,9 +51,9 @@ def create_user():
         if possible_user:
             return jsonify({"message": "User " + email + " already exists"}), 422
         if check_email(email) == False:
-            return jsonify({ "message" : "Email format is invalid" }), 400
+            return jsonify({"message": "Email format is invalid"}), 400
         if len(password) < 6:
-            return jsonify({ "message" : "Password must be at least 6 characters" }), 400
+            return jsonify({"message": "Password must be at least 6 characters"}), 400
         bpassword = bytes(password, "utf-8")
         salt = bcrypt.gensalt(14)
         hashed_password = bcrypt.hashpw(password=bpassword, salt=salt)
@@ -67,6 +73,7 @@ def create_user():
         "message": "Attributes name, lastname, email and password are needed"
     }), 400
 
+
 @users.route("/user", methods=["DELETE"])
 @jwt_required()
 def deleteUser():
@@ -75,19 +82,81 @@ def deleteUser():
     if user:
         db.session.delete(user)
         db.session.commit()
-        return jsonify({"message" : user.email + " has been deleted"}), 200
-    return jsonify({"message" : "User not found"}), 404
+        return jsonify({"message": user.email + " has been deleted"}), 200
+    return jsonify({"message": "User not found"}), 404
+
 
 @users.route("/token", methods=["POST"])
 def create_token():
-    email = request.json.get("email", None)   
-    password = request.json.get("password", None)  
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
     if email is None or password is None or email == "" or password == "":
         return {"message": "Parameters missing"}, 400
-    user = User.query.filter_by(email= email.lower()).one_or_none()
+    user = User.query.filter_by(email=email.lower()).one_or_none()
     if user is None:
         return {"message": "User doesn't exist"}, 400
-    password_byte =bytes(password, "utf-8")
+    password_byte = bytes(password, "utf-8")
     if bcrypt.checkpw(password_byte, user.password.encode("utf-8")):
-        return {"message":"Token created","token": create_access_token(identity = user.email)},200
+        return {"message": "Token created", "token": create_access_token(identity=user.email)}, 200
     return {"message": "Incorrect Password"}, 401
+
+# Get todos los clientes
+
+
+@users.route("/clients", methods=["GET"])
+def get_all_clients():
+    clients = Clients.query.all()
+    return jsonify([client.serialize() for client in clients]), 200
+
+
+# Crear un nuevo cliente
+@users.route("/clients", methods=["POST"])
+def create_client():
+    data = request.form
+    file = request.files['image']
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(UPLOAD_FOLDER, filename))
+    new_client = Clients(
+        name=data["name"],
+        email=data["email"],
+        phone=data["phone"],
+        image=filename,
+        business=data["business"],
+        description=data["description"],
+        status=data["status"]
+    )
+    db.session.add(new_client)
+    db.session.commit()
+    return jsonify(new_client.serialize()), 201
+
+# Actualizar un cliente
+
+
+@users.route("/clients/<int:client_id>", methods=["PUT"])
+def update_client(client_id):
+    client = Clients.query.get(client_id)
+    if not client:
+        return jsonify({"message": "Client not found"}), 404
+    data = request.get_json()
+    client.name = data["name"]
+    client.email = data["email"]
+    client.phone = data["phone"]
+    client.image = data["image"]
+    client.business = data["business"]
+    client.description = data["description"]
+    client.status = data["status"]
+    db.session.commit()
+    return jsonify(client.serialize()), 200
+
+# Eliminar un cliente
+
+
+@users.route("/clients/<int:client_id>", methods=["DELETE"])
+def delete_client(client_id):
+    client = Clients.query.get(client_id)
+    if not client:
+        return jsonify({"message": "Client not found"}), 404
+    db.session.delete(client)
+    db.session.commit()
+    return jsonify({"message": "Client deleted"}), 200
