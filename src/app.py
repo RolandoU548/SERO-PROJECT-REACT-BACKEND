@@ -8,10 +8,11 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Clients, Row
+from models import db
 from flask_jwt_extended import JWTManager
 from routes.users import users
 from routes.database import database
+from routes.clients import clients
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -27,6 +28,7 @@ jwt = JWTManager(app)
 
 app.register_blueprint(users)
 app.register_blueprint(database)
+app.register_blueprint(clients)
 
 
 MIGRATE = Migrate(app, db)
