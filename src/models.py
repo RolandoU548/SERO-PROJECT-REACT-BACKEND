@@ -47,3 +47,14 @@ class Clients(db.Model):
             "description": self.description,
             "status": self.status
         }
+
+class Row(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text, nullable=False)
+    def serialize(self):
+        return {
+            "id": self.id,
+            "text": self.text
+        }
+
+

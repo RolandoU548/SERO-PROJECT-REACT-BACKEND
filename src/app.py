@@ -8,10 +8,10 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Clients
+from models import db, User, Clients, Row
 from flask_jwt_extended import JWTManager
 from routes.users import users
-
+from routes.database import database
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -26,6 +26,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 jwt = JWTManager(app)
 
 app.register_blueprint(users)
+app.register_blueprint(database)
 
 
 MIGRATE = Migrate(app, db)
