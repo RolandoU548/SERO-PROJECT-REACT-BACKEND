@@ -11,18 +11,22 @@ database = Blueprint("database", __name__)
 @database.route("/row", methods=["POST"])
 def create_row():
     body = request.get_json()
-    user = Row(
+    row = Row(
         text = json.dumps(body.get("text"))
         )
-    db.session.add(user)
+    db.session.add(row)
     db.session.commit()
-    users = Row.query.all()
-    all_users = list(map(lambda x: x.serialize(), users))
-    return jsonify(all_users), 200
+    rows = Row.query.all()
+    all_rows = list(map(lambda x: x.serialize(), rows))
+    return jsonify(all_rows), 200
 
 @database.route("/row/<int:row_id>", methods=["GET"])
 def get_row(row_id):
-    user = Row.query.get(row_id)
-    if user:
-        return jsonify(user.text), 200
-    return jsonify({"message": "Row not found"}), 404
+    row = Row.query.get(row_id)
+    return jsonify(row)
+
+@database.route("/rows", methods=["GET"])
+def get_rows():
+    rows = Row.query.all()
+    all_rows = list(map(lambda x: json.loads(x.serialize()["text"]), rows))
+    return jsonify(all_rows), 200
