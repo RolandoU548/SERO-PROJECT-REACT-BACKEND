@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask import request, jsonify
 import bcrypt
-from models import db, User, Client
+from models import db, User
 import re
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity

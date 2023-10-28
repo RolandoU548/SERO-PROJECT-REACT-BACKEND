@@ -22,8 +22,9 @@ def create_row():
 
 @database.route("/row/<int:row_id>", methods=["GET"])
 def get_row(row_id):
-    row = Row.query.get(row_id)
-    return jsonify(row)
+    row = Row.query.get(row_id).serialize()
+    row["text"] = json.loads(row["text"])
+    return jsonify(row), 200
 
 @database.route("/rows", methods=["GET"])
 def get_rows():
