@@ -98,5 +98,5 @@ def create_token():
     password_byte = bytes(password, "utf-8")
     if bcrypt.checkpw(password_byte, user.password.encode("utf-8")):
         return {"message": "Token created", "token": create_access_token(identity=user.email)}, 200
-    return {"message": "Incorrect Password"}, 401
+    return {"message": "Incorrect password"}, 401
 
