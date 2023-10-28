@@ -19,26 +19,25 @@ def get_all_clients():
 # Crear un nuevo cliente
 @clients.route("/clients", methods=["POST"])
 def create_client():
-    data = request.form
-    file = request.files['image']
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(UPLOAD_FOLDER, filename))
-    new_client = Client(
-        name=data["name"],
-        email=data["email"],
-        phone=data["phone"],
-        image=filename,
-        business=data["business"],
-        description=data["description"],
-        status=data["status"]
-    )
-    db.session.add(new_client)
+    data = request.get_json()
+    name = data.get("Name")
+    lastname = data.get("Lastname")
+    email = data.get("Email")
+    phone = data.get("Phone")
+    image = data.get("Image")
+    business = data.get("Business")
+    description = data.get("Description")
+    status = data.get("Status")
+    if not name or not email or not phone or not image or not business or not description or not status or not lastname:
+        return jsonify({"message": "Missing required fields"}), 400
+    client = Client(name=name, email=email, phone=phone, image=image,
+                     business=business, description=description, status=status, lastname=lastname)
+    db.session.add(client)
     db.session.commit()
-    return jsonify(new_client.serialize()), 201
+    return jsonify(client.serialize()), 201
+
 
 # Actualizar un cliente
-
 
 @clients.route("/clients/<int:client_id>", methods=["PUT"])
 def update_client(client_id):
@@ -47,6 +46,7 @@ def update_client(client_id):
         return jsonify({"message": "Client not found"}), 404
     data = request.get_json()
     client.name = data["name"]
+    client.lastname = data["lastname"]
     client.email = data["email"]
     client.phone = data["phone"]
     client.image = data["image"]
