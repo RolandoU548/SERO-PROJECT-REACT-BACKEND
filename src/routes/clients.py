@@ -20,14 +20,14 @@ def get_all_clients():
 @clients.route("/clients", methods=["POST"])
 def create_client():
     data = request.get_json()
-    name = data.get("Name")
-    lastname = data.get("Lastname")
-    email = data.get("Email")
-    phone = data.get("Phone")
-    image = data.get("Image")
-    business = data.get("Business")
-    description = data.get("Description")
-    status = data.get("Status")
+    name = data.get("name")
+    lastname = data.get("lastname")
+    email = data.get("email")
+    phone = data.get("phone")
+    image = data.get("image")
+    business = data.get("business")
+    description = data.get("description")
+    status = data.get("status")
     if not name or not email or not phone or not image or not business or not description or not status or not lastname:
         return jsonify({"message": "Missing required fields"}), 400
     client = Client(name=name, email=email, phone=phone, image=image,
