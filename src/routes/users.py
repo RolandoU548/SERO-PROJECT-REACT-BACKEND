@@ -48,16 +48,16 @@ def create_user():
         and body["email"] != None
         and "password" in body.keys()
         and body["password"] != ""
-        and body["password"] != None
+        and body["password"] is not None
         and "name" in body.keys()
         and body["name"] != ""
-        and body["name"] != None
+        and body["name"] is not None
         and "lastname" in body.keys()
         and body["lastname"] != ""
-        and body["lastname"] != None
+        and body["lastname"] is not None
         and "roles" in body.keys()
         and body["roles"] != ""
-        and body["roles"] != None
+        and body["roles"] is not None
     ):
         items = body.get("roles", [])
         name = body.get("name").capitalize()
@@ -71,12 +71,18 @@ def create_user():
             return jsonify({"message": "Email format is invalid"}), 400
         if len(password) < 6:
             return jsonify({"message": "Password must be at least 6 characters"}), 400
+        if len(items) < 1:
+            return jsonify({"message": "A user must have at least one role"}), 400
         bpassword = bytes(password, "utf-8")
         salt = bcrypt.gensalt(14)
         hashed_password = bcrypt.hashpw(password=bpassword, salt=salt)
         roles = []
-        for i in items:
-            roles.append(Role.query.get(i))
+        for item in items:
+            rol = Role.query.filter_by(role=item).first()
+            if rol:
+                roles.append(rol)
+            else:
+                return jsonify({"message": f"Role {item} doesn't exist"}), 404
         user = User(
             name=name,
             lastname=lastname,
@@ -89,7 +95,7 @@ def create_user():
         return jsonify({"message": "A user has been created", "email": user.email}), 201
     return (
         jsonify(
-            {"message": "Attributes name, lastname, email and password are needed"}
+            {"message": "Attributes name, lastname, email, password and roles are needed"}
         ),
         400,
     )
