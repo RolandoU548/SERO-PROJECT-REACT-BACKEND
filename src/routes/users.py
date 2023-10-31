@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask import request, jsonify
 import bcrypt
-from models import db, User
+from models import db, User, Role
 import re
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
@@ -43,6 +43,7 @@ def get_user():
 def create_user():
     body = request.get_json()
     if "email" in body.keys() and body["email"] != "" and "password" in body.keys() and body["password"] != "" and "name" in body.keys() and body["name"] != "" and "lastname" in body.keys() and body["lastname"] != "":
+        items = body.get("roles", [])
         name = body.get("name").capitalize()
         lastname = body.get("lastname").capitalize()
         email = body.get("email").lower()
@@ -57,12 +58,16 @@ def create_user():
         bpassword = bytes(password, "utf-8")
         salt = bcrypt.gensalt(14)
         hashed_password = bcrypt.hashpw(password=bpassword, salt=salt)
+        roles = []
+        for i in items:
+            roles.append( Role.query.get(i) )   
         user = User(
             name=name,
             lastname=lastname,
             email=email,
             password=hashed_password.decode("utf-8")
         )
+        user.role =  roles
         db.session.add(user)
         db.session.commit()
         return jsonify({
