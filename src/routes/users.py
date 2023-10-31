@@ -11,8 +11,8 @@ import os
 
 
 def check_email(email):
-    regex = r'[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}'
-    if (re.fullmatch(regex, email)):
+    regex = r"[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}"
+    if re.fullmatch(regex, email):
         return True
     else:
         return False
@@ -42,7 +42,23 @@ def get_user():
 @users.route("/user", methods=["POST"])
 def create_user():
     body = request.get_json()
-    if "email" in body.keys() and body["email"] != "" and "password" in body.keys() and body["password"] != "" and "name" in body.keys() and body["name"] != "" and "lastname" in body.keys() and body["lastname"] != "":
+    if (
+        "email" in body.keys()
+        and body["email"] != ""
+        and body["email"] != None
+        and "password" in body.keys()
+        and body["password"] != ""
+        and body["password"] != None
+        and "name" in body.keys()
+        and body["name"] != ""
+        and body["name"] != None
+        and "lastname" in body.keys()
+        and body["lastname"] != ""
+        and body["lastname"] != None
+        and "roles" in body.keys()
+        and body["roles"] != ""
+        and body["roles"] != None
+    ):
         items = body.get("roles", [])
         name = body.get("name").capitalize()
         lastname = body.get("lastname").capitalize()
@@ -60,23 +76,23 @@ def create_user():
         hashed_password = bcrypt.hashpw(password=bpassword, salt=salt)
         roles = []
         for i in items:
-            roles.append( Role.query.get(i) )   
+            roles.append(Role.query.get(i))
         user = User(
             name=name,
             lastname=lastname,
             email=email,
-            password=hashed_password.decode("utf-8")
+            password=hashed_password.decode("utf-8"),
         )
-        user.role =  roles
+        user.role = roles
         db.session.add(user)
         db.session.commit()
-        return jsonify({
-            "message": "A user has been created",
-            "email": user.email
-        }), 201
-    return jsonify({
-        "message": "Attributes name, lastname, email and password are needed"
-    }), 400
+        return jsonify({"message": "A user has been created", "email": user.email}), 201
+    return (
+        jsonify(
+            {"message": "Attributes name, lastname, email and password are needed"}
+        ),
+        400,
+    )
 
 
 @users.route("/user", methods=["DELETE"])
@@ -102,6 +118,8 @@ def create_token():
         return {"message": "User doesn't exist"}, 400
     password_byte = bytes(password, "utf-8")
     if bcrypt.checkpw(password_byte, user.password.encode("utf-8")):
-        return {"message": "Token created", "token": create_access_token(identity=user.email)}, 200
+        return {
+            "message": "Token created",
+            "token": create_access_token(identity=user.email),
+        }, 200
     return {"message": "Incorrect password"}, 401
-
