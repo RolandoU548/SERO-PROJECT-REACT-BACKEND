@@ -55,11 +55,11 @@ def create_user():
         and "lastname" in body.keys()
         and body["lastname"] != ""
         and body["lastname"] is not None
-        and "roles" in body.keys()
-        and body["roles"] != ""
-        and body["roles"] is not None
+        and "role" in body.keys()
+        and body["role"] != ""
+        and body["role"] is not None
     ):
-        items = body.get("roles", [])
+        items = body.get("role", [])
         name = body.get("name").capitalize()
         lastname = body.get("lastname").capitalize()
         email = body.get("email").lower()
@@ -78,9 +78,9 @@ def create_user():
         hashed_password = bcrypt.hashpw(password=bpassword, salt=salt)
         roles = []
         for item in items:
-            rol = Role.query.filter_by(role=item).first()
-            if rol:
-                roles.append(rol)
+            role = Role.query.filter_by(role=item).first()
+            if role:
+                roles.append(role)
             else:
                 return jsonify({"message": f"Role {item} doesn't exist"}), 404
         user = User(

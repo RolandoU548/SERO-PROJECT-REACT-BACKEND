@@ -4,7 +4,7 @@ db = SQLAlchemy()
 
 
 association_table = db.Table(
-    "association_table_roles",
+    "association_table_role",
     db.Column("user", db.Integer, db.ForeignKey("user.id")),
     db.Column("role", db.Integer, db.ForeignKey("role.id")),
 )
@@ -32,7 +32,7 @@ class User(db.Model):
             "name": self.name,
             "lastname": self.lastname,
             "email": self.email,
-            "roles": [rol.serialize() for rol in self.role ]
+            "role": [rol.serialize() for rol in self.role ]
             # do not serialize the password, its a security breach
         }
 
