@@ -21,14 +21,6 @@ def check_email(email):
 users = Blueprint("users", __name__)
 
 
-@users.route("/users", methods=["GET"])
-@jwt_required()
-def get_users():
-    users = User.query.all()
-    all_users = list(map(lambda x: x.serialize(), users))
-    return jsonify(all_users), 200
-
-
 @users.route("/user", methods=["GET"])
 @jwt_required()
 def get_user():
@@ -37,6 +29,23 @@ def get_user():
     if user:
         return jsonify(user.serialize()), 200
     return jsonify({"message": "User not found"}), 404
+
+
+@users.route("/users", methods=["GET"])
+@jwt_required()
+def get_users():
+    email = get_jwt_identity()
+    admin_found = False
+    user = User.query.filter_by(email=email).first().serialize()
+    for role in user["role"]:
+        if role["role"] == "admin":
+            admin_found = True
+            break
+    if not admin_found:
+        return jsonify("Unauthorized user"), 400
+    users = User.query.all()
+    all_users = list(map(lambda x: x.serialize(), users))
+    return jsonify(all_users), 200
 
 
 @users.route("/user", methods=["POST"])
@@ -95,7 +104,9 @@ def create_user():
         return jsonify({"message": "A user has been created", "email": user.email}), 201
     return (
         jsonify(
-            {"message": "Attributes name, lastname, email, password and roles are needed"}
+            {
+                "message": "Attributes name, lastname, email, password and roles are needed"
+            }
         ),
         400,
     )
