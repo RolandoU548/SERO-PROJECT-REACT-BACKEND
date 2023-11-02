@@ -36,7 +36,10 @@ def get_user():
 def get_users():
     email = get_jwt_identity()
     admin_found = False
-    user = User.query.filter_by(email=email).first().serialize()
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify("User has changed their email"), 404
+    user = user.serialize()
     for role in user["role"]:
         if role["role"] == "admin":
             admin_found = True
@@ -111,12 +114,52 @@ def create_user():
         400,
     )
 
-
-@users.route("/user", methods=["DELETE"])
+@users.route("/user/<int:user_id>", methods=["PUT"])
 @jwt_required()
-def deleteUser():
-    email = get_jwt_identity()
-    user = User.query.filter_by(email=email).first()
+def update_user(user_id):
+    body = request.get_json()
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"message": f"User {email} already exists"}), 422
+    
+    keys = ["name", "lastname", "email", "password"]
+    for key in keys:
+        if key in body and body[key] and body[key] != "":
+            if key == "email":
+                email = body[key].lower()
+                if not check_email(email):
+                    return jsonify({"message": "Email format is invalid"}), 400
+                setattr(user, key, email)
+            elif key == "password":
+                if len(body[key]) < 6:
+                    return jsonify({"message": "Password must be at least 6 characters"}), 400
+                bpassword = bytes(body[key], "utf-8")
+                salt = bcrypt.gensalt(14)
+                hashed_password = bcrypt.hashpw(password=bpassword, salt=salt)
+                setattr(user, key, hashed_password)
+            else:
+                setattr(user, key, body[key].capitalize())
+
+    if "role" in body and body["role"] and body["role"] != "":
+        items = body.get("role", [])
+        if len(items) < 1:
+            return jsonify({"message": "A user must have at least one role"}), 400
+        roles = []
+        for item in items:
+            role = Role.query.filter_by(role=item).first()
+            if role:
+                roles.append(role)
+            else:
+                return jsonify({"message": f"Role {item} doesn't exist"}), 404
+        user.role = roles
+    db.session.commit()
+    return jsonify({"message": "A user has been updated", "email": user.email}), 201
+
+
+@users.route("/user/<int:user_id>", methods=["DELETE"])
+@jwt_required()
+def deleteUser(user_id):
+    user = User.query.get(user_id)
     if user:
         db.session.delete(user)
         db.session.commit()
