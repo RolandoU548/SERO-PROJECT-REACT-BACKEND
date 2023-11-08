@@ -13,6 +13,7 @@ from flask_jwt_extended import JWTManager
 from routes.users import users
 from routes.database import database
 from routes.clients import clients
+from routes.payments import payments
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -29,6 +30,7 @@ jwt = JWTManager(app)
 app.register_blueprint(users)
 app.register_blueprint(database)
 app.register_blueprint(clients)
+app.register_blueprint(payments)
 
 
 MIGRATE = Migrate(app, db)

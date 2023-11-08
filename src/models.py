@@ -62,7 +62,7 @@ class Client(db.Model):
     description = db.Column(db.String(120), nullable=False)
     status = db.Column(db.String(20), nullable=False)
 
-    def repr(self):
+    def __repr__(self):
         return '<Client %r>' % self.name
 
     def serialize(self):
@@ -78,6 +78,34 @@ class Client(db.Model):
             "status": self.status
         }
 
+class Payment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.String(120), nullable=False)
+    method = db.Column(db.String(120), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    amount = db.Column(db.Numeric(precision=10, scale=2), nullable=False)
+    invoice = db.Column(db.String(120), nullable=False)
+    service = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.String(20), nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=False)
+    client = db.relationship('Client', backref=db.backref('payments', lazy=True))
+
+    def __repr__(self):
+        return '<Payment %r>' % self.id
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "status": self.status,
+            "method": self.method,
+            "date": self.date.strftime('%m/%d/%Y'),
+            "amount": str(self.amount),
+            "invoice": self.invoice,
+            "service": self.service,
+            "description": self.description,
+            "client": self.client_id
+        }
+        
 class Row(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
