@@ -15,6 +15,7 @@ def setup_admin(app):
     admin.add_view(ModelView(Payment, db.session))
     admin.add_view(ModelView(Row, db.session))
     admin.add_view(ModelView(Role, db.session))
+    admin.add_view(ModelView(InvitationsForm, db.session))
 
     # You can duplicate that line to add mew models
     # admin.add_view(ModelView(YourModelName, db.session))
