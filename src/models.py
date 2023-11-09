@@ -117,7 +117,7 @@ class Row(db.Model):
             "text": self.text
         }
 
-class InviteClientForm(db.Model):
+class InvitationClientForm(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     invitation_hash = db.Column(db.String(9999), nullable=False)
     expired_form = db.Column(db.Boolean, nullable=False)
