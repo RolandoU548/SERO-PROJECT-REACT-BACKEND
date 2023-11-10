@@ -72,6 +72,10 @@ def create_user():
         and body["role"] is not None
     ):
         items = body.get("role", [])
+        status= body.get("status")
+        phone= body.get("phone")
+        birthday= body.get("birthday")
+        address= body.get("address")
         name = body.get("name").capitalize()
         lastname = body.get("lastname").capitalize()
         email = body.get("email").lower()
@@ -99,6 +103,10 @@ def create_user():
             name=name,
             lastname=lastname,
             email=email,
+            address=address,
+            phone=phone,
+            status=status,
+            birthday=birthday,
             password=hashed_password.decode("utf-8"),
         )
         user.role = roles
@@ -122,7 +130,7 @@ def update_user(user_id):
     if not user:
         return jsonify({"message": f"User {email} already exists"}), 422
     
-    keys = ["name", "lastname", "email", "password"]
+    keys = ["name", "lastname", "email", "password", "status", "phone", "address", "birthday"]
     for key in keys:
         if key in body and body[key] and body[key] != "":
             if key == "email":
@@ -139,7 +147,6 @@ def update_user(user_id):
                 setattr(user, key, hashed_password)
             else:
                 setattr(user, key, body[key].capitalize())
-
     if "role" in body and body["role"] and body["role"] != "":
         items = body.get("role", [])
         if len(items) < 1:
