@@ -16,14 +16,20 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     role = db.relationship("Role", secondary=association_table)
+    status = db.Column(db.String(20), nullable=True)
+    phone = db.Column(db.Integer, nullable=True)
+    address = db.Column(db.String(120), nullable=True)
+    birthday = db.Column(db.Date, nullable=True)
 
-    def __init__(self, name, lastname, email, password):
+
+
+    def init(self, name, lastname, email, password):
         self.name = name
         self.lastname = lastname
         self.email = email
         self.password = password
 
-    def __repr__(self):
+    def repr(self):
         return '<User %r>' % self.username
 
     def serialize(self):
@@ -32,6 +38,10 @@ class User(db.Model):
             "name": self.name,
             "lastname": self.lastname,
             "email": self.email,
+            "status": self.status,
+            "phone": self.phone,
+            "address": self.address,
+            "birthday": self.birthday,
             "role": [rol.serialize() for rol in self.role ]
             # do not serialize the password, its a security breach
         }
