@@ -117,4 +117,19 @@ class Row(db.Model):
             "text": self.text
         }
 
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    completed = db.Column(db.Boolean, default=False, nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    text = db.Column(db.String(120), nullable=False)
 
+    def __repr__(self):
+        return '<Task %r>' % self.id
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "completed": self.completed,
+            "date": self.date.strftime('%Y-%m-%d'),
+            "text": self.text
+        }
