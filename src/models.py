@@ -132,6 +132,17 @@ class Task(db.Model):
     completed = db.Column(db.Boolean, default=False, nullable=False)
     date = db.Column(db.Date, nullable=False)
     text = db.Column(db.String(120), nullable=False)
+    
+class InvitationClientForm(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    invitation_hash = db.Column(db.String(9999), nullable=False)
+    expired_form = db.Column(db.Boolean, nullable=False)
+    def serialize(self):
+        return {
+            "id": self.id,
+            "invitation_hash":self.invitation_hash,
+            "expired_form": self.expired_form
+        }
 
     def __repr__(self):
         return '<Task %r>' % self.id
