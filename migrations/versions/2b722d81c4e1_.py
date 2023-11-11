@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 845d3f9164a8
+Revision ID: 2b722d81c4e1
 Revises: 
-Create Date: 2023-11-10 02:03:31.467937
+Create Date: 2023-11-11 02:08:34.456205
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '845d3f9164a8'
+revision = '2b722d81c4e1'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -31,6 +31,12 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
+    op.create_table('invitation_client_form',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('invitation_hash', sa.String(length=9999), nullable=False),
+    sa.Column('expired_form', sa.Boolean(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('role',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('role', sa.String(length=120), nullable=False),
@@ -49,6 +55,10 @@ def upgrade():
     sa.Column('lastname', sa.String(length=120), nullable=False),
     sa.Column('email', sa.String(length=120), nullable=False),
     sa.Column('password', sa.String(length=80), nullable=False),
+    sa.Column('status', sa.String(length=20), nullable=True),
+    sa.Column('phone', sa.Integer(), nullable=True),
+    sa.Column('address', sa.String(length=120), nullable=True),
+    sa.Column('birthday', sa.Date(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
@@ -89,5 +99,6 @@ def downgrade():
     op.drop_table('user')
     op.drop_table('task')
     op.drop_table('role')
+    op.drop_table('invitation_client_form')
     op.drop_table('client')
     # ### end Alembic commands ###

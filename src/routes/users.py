@@ -50,7 +50,6 @@ def get_users():
     all_users = list(map(lambda x: x.serialize(), users))
     return jsonify(all_users), 200
 
-
 @users.route("/user", methods=["POST"])
 def create_user():
     body = request.get_json()
@@ -162,7 +161,6 @@ def update_user(user_id):
     db.session.commit()
     return jsonify({"message": "A user has been updated", "email": user.email}), 201
 
-
 @users.route("/user/<int:user_id>", methods=["DELETE"])
 @jwt_required()
 def deleteUser(user_id):
@@ -190,3 +188,5 @@ def create_token():
             "token": create_access_token(identity=user.email),
         }, 200
     return {"message": "Incorrect password"}, 401
+
+# Comentario para commit
