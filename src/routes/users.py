@@ -9,7 +9,6 @@ from flask_jwt_extended import jwt_required
 from utils import APIException
 import os
 
-
 def check_email(email):
     regex = r"[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}"
     if re.fullmatch(regex, email):
