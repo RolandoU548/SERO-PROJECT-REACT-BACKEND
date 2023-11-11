@@ -21,7 +21,7 @@ class User(db.Model):
     address = db.Column(db.String(120), nullable=True)
     birthday = db.Column(db.Date, nullable=True)
 
-
+    # epale
 
     def __init__(self, name, lastname, email, password):
         self.name = name
