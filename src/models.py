@@ -15,11 +15,12 @@ class User(db.Model):
     lastname = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
+    createdAt = db.Column(db.DateTime, nullable=False)
     role = db.relationship("Role", secondary=association_table)
     status = db.Column(db.String(20), nullable=True)
     phone = db.Column(db.Integer, nullable=True)
     address = db.Column(db.String(120), nullable=True)
-    birthday = db.Column(db.Date, nullable=True)
+    birthday = db.Column(db.DateTime, nullable=True)
 
 
 
@@ -38,6 +39,7 @@ class User(db.Model):
             "name": self.name,
             "lastname": self.lastname,
             "email": self.email,
+            "createdAt": self.createdAt,
             "status": self.status,
             "phone": self.phone,
             "address": self.address,

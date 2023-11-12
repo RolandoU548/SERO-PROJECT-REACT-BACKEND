@@ -8,6 +8,7 @@ from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from utils import APIException
 import os
+from datetime import datetime
 
 def check_email(email):
     regex = r"[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}"
@@ -101,6 +102,7 @@ def create_user():
             name=name,
             lastname=lastname,
             email=email,
+            createdAt=datetime.now(),
             address=address,
             phone=phone,
             status=status,
@@ -143,6 +145,8 @@ def update_user(user_id):
                 salt = bcrypt.gensalt(14)
                 hashed_password = bcrypt.hashpw(password=bpassword, salt=salt)
                 setattr(user, key, hashed_password)
+            elif isinstance(body[key], int) or isinstance(body[key], float):
+                    setattr(user, key, body[key])
             else:
                 setattr(user, key, body[key].capitalize())
     if "role" in body and body["role"] and body["role"] != "":
