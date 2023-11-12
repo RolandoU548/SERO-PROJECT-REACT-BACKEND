@@ -156,3 +156,14 @@ class InvitationClientForm(db.Model):
             "invitation_hash":self.invitation_hash,
             "expired_form": self.expired_form
         }
+
+class InvitationDatabaseForm(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    invitation_hash = db.Column(db.String(9999), nullable=False)
+    expired_form = db.Column(db.Boolean, nullable=False)
+    def serialize(self):
+        return {
+            "id": self.id,
+            "invitation_hash":self.invitation_hash,
+            "expired_form": self.expired_form
+        }
