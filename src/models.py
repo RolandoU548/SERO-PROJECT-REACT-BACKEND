@@ -98,7 +98,7 @@ class Payment(db.Model):
     amount = db.Column(db.Numeric(precision=10, scale=2), nullable=False)
     invoice = db.Column(db.String(120), nullable=False)
     service = db.Column(db.String(120), nullable=False)
-    description = db.Column(db.String(20), nullable=False)
+    description = db.Column(db.String(120), nullable=False)
     client_id = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=False)
     client = db.relationship('Client', backref=db.backref('payments', lazy=True))
 
@@ -169,3 +169,13 @@ class InvitationDatabaseForm(db.Model):
             "table_user_id": self.table_user_id,
             "expired_form": self.expired_form
         }
+
+class Suggestion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    text = db.Column(db.Text, nullable=False)
+
+    def serialize(self):
+        return {"id": self.id, "name": self.name, "email": self.email, "text": self.text}
+

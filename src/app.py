@@ -17,6 +17,7 @@ from routes.payments import payments
 from routes.tasks import tasks
 from routes.inviteClienForm import inviteclientform
 from routes.inviteDbForm import invitedbform
+from routes.user_suggestion import user_suggestion
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -37,6 +38,7 @@ app.register_blueprint(payments)
 app.register_blueprint(tasks)
 app.register_blueprint(inviteclientform)
 app.register_blueprint(invitedbform)
+app.register_blueprint(user_suggestion)
 
 
 MIGRATE = Migrate(app, db)

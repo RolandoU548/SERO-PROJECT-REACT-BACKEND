@@ -2,6 +2,7 @@ from models import db, Payment
 from flask import Blueprint, request, jsonify
 from models import db, Payment
 from utils import APIException
+from datetime import datetime 
 
 
 payments = Blueprint("payments", __name__)
@@ -19,10 +20,11 @@ def create_payment():
     if not data:
         raise APIException('No input data provided', status_code=400)
     try:
+        date = datetime.strptime(data['date'], '%d/%m/%Y').strftime('%Y-%m-%d')
         payment = Payment(
             amount=data['amount'],
             description=data['description'],
-            date=data['date'],
+            date=date,
             service=data['service'],
             invoice=data['invoice'],
             client_id=data['client'],
