@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify, url_for
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
+from datetime import timedelta
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db
@@ -21,6 +22,8 @@ from routes.user_suggestion import user_suggestion
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
+
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 
 db_url = os.getenv("DATABASE_URL")
 if db_url is not None:
