@@ -192,4 +192,27 @@ def create_token():
         }, 200
     return {"message": "Incorrect password"}, 401
 
-# Comentario para commit
+@users.route("/role", methods=["POST"])
+def create_role():
+    body = request.get_json()
+    if (
+        "role" in body.keys()
+        and body["role"] != ""
+        and body["role"] is not None
+    ):
+        rol = body.get("role")
+        role = Role.query.filter_by(role=rol).first()
+        if not role:
+            role = Role(role=rol)
+            db.session.add(role)
+            db.session.commit()
+            return jsonify({"message": "A role has been created", "role": role.role}), 201
+        return jsonify({"message": "Role already exists"})
+    return (
+        jsonify(
+            {
+                "message": "Attribute role is needed"
+            }
+        ),
+        400,
+    )
