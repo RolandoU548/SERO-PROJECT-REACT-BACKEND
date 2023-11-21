@@ -72,7 +72,7 @@ def create_user():
     ):
         items = body.get("role", [])
         status= body.get("status")
-        phone= int(body.get("phone"))
+        phone= body.get("phone")
         birthday= body.get("birthday")
         address= body.get("address")
         name = body.get("name").capitalize()
@@ -145,6 +145,12 @@ def update_user(user_id):
                 salt = bcrypt.gensalt(14)
                 hashed_password = bcrypt.hashpw(password=bpassword, salt=salt)
                 setattr(user, key, hashed_password)
+            elif key == "phone":
+                try:
+                phone = int(body[key])
+                except:
+                    return jsonify({"message": "Phone format is invalid"}), 400
+                setattr(user, key, phone)
             elif isinstance(body[key], int) or isinstance(body[key], float):
                     setattr(user, key, body[key])
             else:
