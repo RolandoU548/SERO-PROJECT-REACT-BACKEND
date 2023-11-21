@@ -147,7 +147,7 @@ def update_user(user_id):
                 setattr(user, key, hashed_password)
             elif key == "phone":
                 try:
-                phone = int(body[key])
+                    phone = int(body[key])
                 except:
                     return jsonify({"message": "Phone format is invalid"}), 400
                 setattr(user, key, phone)
