@@ -72,7 +72,7 @@ def create_user():
     ):
         items = body.get("role", [])
         status= body.get("status")
-        phone= body.get("phone")
+        phone= int(body.get("phone"))
         birthday= body.get("birthday")
         address= body.get("address")
         name = body.get("name").capitalize()
